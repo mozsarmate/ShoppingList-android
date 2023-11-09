@@ -1,5 +1,6 @@
 package hu.ait.shoppinglist.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,7 +55,6 @@ fun ListScreen(modifier: Modifier = Modifier, viewModel: ListViewModel = hiltVie
     Box() {
         Column() {
             Column() {
-                
                 TopAppBar(
                     title = {
                         Text("Shopping List")
@@ -71,7 +71,14 @@ fun ListScreen(modifier: Modifier = Modifier, viewModel: ListViewModel = hiltVie
                 modifier = Modifier.fillMaxHeight()
             ) {
                 items(shoppingList) { item ->
-                    Text(text = item.name)
+                    
+                    ItemCard(
+                        curItem = item,
+                        onDelete = {
+                            viewModel.delete(item)
+                        },
+                        icon = viewModel.getIcon(item)
+                    )
                 }
             }
             
@@ -126,7 +133,8 @@ fun AddEditItemDialog(onDismiss: () -> Unit, modifier: Modifier, itemViewModel: 
         }
         
         Column(
-            Modifier.background(
+            Modifier
+                .background(
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     shape = MaterialTheme.shapes.medium
                 )
@@ -169,10 +177,26 @@ fun AddEditItemDialog(onDismiss: () -> Unit, modifier: Modifier, itemViewModel: 
                     Text("Price")
                 }
             )
+            
+            SpinnerSample(
+                listOf("Food", "Clothes", "Electronics", "Other"),
+                preselected = "Food",
+                onSelectionChanged = {
+                    if (it == "Food") itemCat = ItemCategory.FOOD
+                    else if (it == "Clothes") itemCat = ItemCategory.CLOTHES
+                    else if (it == "Electronics") itemCat = ItemCategory.ELECTRONICS
+                    else itemCat = ItemCategory.OTHER
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+            )
+            
             Button(onClick = {
                 if (itemTitle != "" && itemPrice > 0) {
                     itemViewModel.insert(
                         Item(
+                            id = (System.currentTimeMillis() % 10000000).toInt(),
                             name = itemTitle,
                             category = itemCat,
                             estPrice = itemPrice,
@@ -180,6 +204,7 @@ fun AddEditItemDialog(onDismiss: () -> Unit, modifier: Modifier, itemViewModel: 
                             isBought = false
                         )
                     )
+                    Log.d("MAIN", "Added new item")
                 }
                 onDismiss()
             }) {

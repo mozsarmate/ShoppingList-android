@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "itemtable")
 data class Item(
-    @PrimaryKey var id : Int = 0,
+    @PrimaryKey var id : Int,
     @ColumnInfo("name") var name: String,
     @ColumnInfo("category") var category: ItemCategory,
     @ColumnInfo("estPrice") var estPrice: Int,
@@ -15,5 +15,5 @@ data class Item(
 )
 
 enum class ItemCategory {
-    FOOD, CLOTHES, ELECTRONICS, OTHER
+    FOOD, CLOTHES, ELECTRONICS, OTHER;
 }
